@@ -6,9 +6,10 @@ SCRIPTDIR="$(cd "$(dirname "$0")"; pwd -P)"
 
 
 docker pull ${IMAGE}
-docker stop ${NAME}
-docker logs ${NAME} &> $(TZ=UTC date +%Y-%m-%d-%H%M-${NAME}.log)
-docker rm -v -f ${NAME}
+
+docker stop ${NAME} && \
+  docker logs ${NAME} &> logs/$(TZ=UTC date +%Y-%m-%d-%H%M-${NAME}.log) && \
+  docker rm -v -f ${NAME}
 
 docker run -d \
   --name ${NAME} \
@@ -18,6 +19,5 @@ docker run -d \
   -e STORE_TYPE="${STORE_TYPE}" \
   -p 19981:8182 \
   -v ${SCRIPTDIR}/config:/etc/location \
-  -v ${SCRIPTDIR}/certs:/etc/ssl/certs \
   ${IMAGE}
 
